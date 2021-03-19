@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
@@ -9,18 +19,22 @@ from src.resources.store import Store, StoreList
 from src.db import db
 
 
+__version__ = "0.1.0"
+__author__ = "github.com/don-kanaille"
+
+
 app = Flask(__name__)
 
 
 # Load config
 app.config.from_object("config.DevelopmentConfig")
 
-# Initialization
+# Initialization of app & db
 api = Api(app)
 db.init_app(app)
 app.app_context().push()
 
-# JsonWebToken
+# Init JsonWebToken
 jwt = JWT(app, authenticate, identity)
 
 
@@ -48,7 +62,7 @@ def customized_error_handler(error):
     }), error.status_code
 
 
-# Endpoints for Resources
+# Endpoints
 api.add_resource(UserRegister, '/register')
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
