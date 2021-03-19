@@ -25,7 +25,10 @@ class Item(Resource):
     @jwt_required()
     def get(self, name: str) -> tuple:
         """
-        Returns item <name>.
+        Returns item by name.
+
+        :param name: String name.
+        :return: {'message': "Item not found."}
         """
         item = ItemModel.find_by_name(name)
         if item:
@@ -35,7 +38,10 @@ class Item(Resource):
     @jwt_required()
     def post(self, name: str) -> tuple:
         """
-        Creates a new item <name>.
+        Creates a new item.
+
+        :param name:
+        :return: {'message': "An item with name '{}' already exists."}
         """
         if ItemModel.find_by_name(name):
             return {'message': "An item with name '{}' already exists.".format(name)}, 422  # Un-processable Entity
@@ -55,8 +61,10 @@ class Item(Resource):
     def delete(self, name: str) -> tuple:
         """
         Deletes given object.
-        """
 
+        :param name: String name.
+        :return: {'message': 'Item deleted!'}
+        """
         item = ItemModel.find_by_name(name)
 
         if item:
@@ -66,9 +74,11 @@ class Item(Resource):
     @jwt_required()
     def put(self, name: str) -> tuple:
         """
-        Create new or update existing item <name>.
-        """
+        Create new or update existing item.
 
+        :param name: String name.
+        :return: {'item': Int}
+        """
         data = Item.parser.parse_args()
 
         item = ItemModel.find_by_name(name)
@@ -90,4 +100,9 @@ class ItemList(Resource):
     @staticmethod
     @jwt_required()
     def get() -> tuple:
+        """
+        Returns a list of all items.
+
+        :return: {'items': Int}
+        """
         return {'items': [item.json() for item in ItemModel.query.all()]}, 200

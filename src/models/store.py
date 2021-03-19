@@ -17,7 +17,8 @@ class StoreModel(db.Model):
     def json(self) -> dict:
         """
         Returns the name & items as .json string.
-        :return: {'name': self.name, 'items': self.items}
+
+        :return: {'name': String, 'items': String}
         """
         return {'name': self.name, 'items': [item.json() for item in self.items.all()]}  # List comprehension
 
@@ -25,6 +26,7 @@ class StoreModel(db.Model):
     def find_by_name(cls, name: str) -> object:
         """
         Find an object by its name.
+
         :param name: Item name to find.
         :return: object
         """

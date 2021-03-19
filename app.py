@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 
 # Load config
-app.config.from_object("config.DevelopmentConfig")
+app.config.from_object("config.DevelopmentConfig")  # TODO: *** CHANGE BEFORE DEPLOYMENT ***
 
 # Initialization of app & db
 api = Api(app)
@@ -47,10 +47,10 @@ def create_tables() -> None:
 
 
 @jwt.auth_response_handler
-def customized_response_handler(access_token, identity):
+def customized_response_handler(access_token, identity_):
     return jsonify({
         'access_token': access_token.decode('utf-8'),
-        'user_id': identity.id
+        'user_id': identity_.id
     })
 
 
