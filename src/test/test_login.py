@@ -1,6 +1,6 @@
 import json
 
-from tests.BaseCase import BaseCase
+from test.test_basic import BaseCase
 
 
 class TestUserLogin(BaseCase):

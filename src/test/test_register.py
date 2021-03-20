@@ -1,6 +1,6 @@
 import json
 
-from BaseCase import BaseCase
+from test.test_basic import BaseCase
 
 
 class TestUserRegister(BaseCase):

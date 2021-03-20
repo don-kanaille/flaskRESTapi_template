@@ -1,7 +1,7 @@
 import unittest
 
-from create_app import create_app
-from db import db
+from src.create_app import create_app
+from src.db import db
 
 
 class BaseCase(unittest.TestCase):
