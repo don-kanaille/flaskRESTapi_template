@@ -16,7 +16,7 @@ __author__ = "github.com/don-kanaille"
 
 
 # Create & Initialize Flask app
-app = create_app(mode='TEST')
+app = create_app(mode='DEVELOP')
 
 
 if __name__ == '__main__':
