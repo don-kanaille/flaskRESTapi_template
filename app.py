@@ -8,7 +8,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from flask import Flask, jsonify
+from flask import jsonify
 from flask_restful import Api
 from flask_jwt import JWT
 
@@ -16,6 +16,7 @@ from src.security import authenticate, identity
 from src.resources.user import UserRegister
 from src.resources.item import Item, ItemList
 from src.resources.store import Store, StoreList
+from create_app import create_app
 from src.db import db
 
 
@@ -23,19 +24,14 @@ __version__ = "0.1.0"
 __author__ = "github.com/don-kanaille"
 
 
-app = Flask(__name__)
+# Create app
+app = create_app(mode='TEST')
 
 
-# Load config
-app.config.from_object("config.DevelopmentConfig")  # TODO: *** CHANGE BEFORE DEPLOYMENT ***
-
-# Initialization of app & db
-api = Api(app)
+# Initialization of .db, JWT & API
 db.init_app(app)
-app.app_context().push()
-
-# Init JsonWebToken
 jwt = JWT(app, authenticate, identity)
+api = Api(app=app)
 
 
 @app.before_first_request
