@@ -42,3 +42,35 @@ class UserRegister(Resource):
         user.save_to_db()  # Because we use a parser we can use **data! Its never gonna have more/less arguments
 
         return {"message": "User created successfully."}, 201
+
+
+class User(Resource):
+
+    @classmethod
+    def get(cls, user_id) -> tuple:
+        """
+        Get the user by an id.
+
+        :param user_id: Integer of userid.
+        :return: User or .json message
+        """
+        user = UserModel.find_by_id(id_=user_id)
+
+        if not user:
+            return {'message': 'User not found!'}, 404
+        return user.json(), 200
+
+    @classmethod
+    def delete(cls, user_id) -> tuple:
+        """
+        Delete a user from the db.
+
+        :param user_id: Int of user id.
+        :return: .json message + status code.
+        """
+        user = UserModel.find_by_id(id_=user_id)
+
+        if not user:
+            return {'message': 'User not found!'}, 404
+        user.delete_from_db()  # TODO: check warning
+        return {'message': 'User deleted.'}, 200

@@ -18,7 +18,7 @@ class ItemModel(db.Model):
 
     def json(self) -> dict:
         """
-        Returns the name & price as .json string.
+        Returns the id, name, price and store_id as .json string.
 
         :return: {'id': Int, 'name': String, 'price': Int, 'store_id': Int}
         """
