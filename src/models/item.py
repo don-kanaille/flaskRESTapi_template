@@ -19,7 +19,8 @@ class ItemModel(db.Model):
     def json(self) -> dict:
         """
         Returns the name & price as .json string.
-        :return: {'name': self.name, 'price': self.price}
+
+        :return: {'name': String, 'price': Int}
         """
         return {'name': self.name, 'price': self.price}
 
@@ -27,8 +28,9 @@ class ItemModel(db.Model):
     def find_by_name(cls, name: str) -> object:
         """
         Find an object by its name.
+
         :param name: Item name to find.
-        :return: object
+        :return: Object of Item-class.
         """
         return cls.query.filter_by(name=name).first()  # SELECT * FROM items WHERE name=name LIMIT 1
 

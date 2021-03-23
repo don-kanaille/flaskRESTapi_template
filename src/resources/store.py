@@ -22,6 +22,7 @@ class Store(Resource):
     def post(name: str) -> tuple:
         """
         Creates a new store.
+
         :param name: Name of the store.
         :return: store in .json or error message.
         """
@@ -42,6 +43,7 @@ class Store(Resource):
     def get(name: str) -> tuple:
         """
         Returns an existing store or error message.
+
         :param name: Name of the store
         :return: .json error message if no store found.
         """
@@ -55,6 +57,7 @@ class Store(Resource):
     def delete(name: str) -> tuple:
         """
         Delete a store by its name.
+
         :param name: Name of the store.
         :return: .json message
         """
@@ -75,6 +78,7 @@ class StoreList(Resource):
     def get() -> tuple:
         """
         Returns a list of all stores in .db
+
         :return: All stores found in .db
         """
         return {'stores': [store.json() for store in StoreModel.query.all()]}, 200
