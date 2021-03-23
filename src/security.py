@@ -1,4 +1,3 @@
-from werkzeug.security import safe_str_cmp
 from passlib.hash import pbkdf2_sha256
 
 from src.models.user import UserModel
@@ -13,7 +12,7 @@ def authenticate(username: str, password: str) -> object:
     :return: Object of UserModel-class.
     """
     user = UserModel.find_by_username(username)
-
+    # Check user & verify hash
     if user and pbkdf2_sha256.verify(password, user.password):
         return user
 
