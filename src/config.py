@@ -22,7 +22,7 @@ class Config(object):
 
     JWT_AUTH_URL_RULE = '/login'
     JWT_EXPIRATION_DELTA = timedelta(seconds=1800)
-
+    # TODO: add folder for .db files to have a clean folder structure
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL', 'sqlite:///' + DB_NAME + '.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True

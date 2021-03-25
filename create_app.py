@@ -1,4 +1,4 @@
-from flask import jsonify, Flask
+from flask import jsonify, Flask, render_template
 from flask_restful import Api
 from flask_jwt import JWT
 
@@ -57,6 +57,16 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
             'code': error.status_code
         }), error.status_code
 
+    @app.errorhandler(404)
+    def internal_server_error(status_code: int = 500) -> tuple:
+        return render_template('error-404.html'), status_code
+
+    # TODO: internal_server_error(500)
+    """
+    @app.errorhandler(500)
+    def internal_server_error(status_code: int = 500) -> tuple:
+        return render_template('error-500.html'), status_code
+    """
     # Add Endpoints
     api.add_resource(UserRegister, '/register')
     api.add_resource(Item, '/item/<string:name>')
