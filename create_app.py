@@ -58,7 +58,7 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
         }), error.status_code
 
     @app.errorhandler(404)
-    def internal_server_error(status_code: int = 500) -> tuple:
+    def page_not_found(status_code: int = 404) -> tuple:
         return render_template('error-404.html'), status_code
 
     # TODO: internal_server_error(500)

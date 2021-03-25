@@ -141,3 +141,4 @@ cython_debug/
 
 # Databases
 /src/*.db
+*.db
