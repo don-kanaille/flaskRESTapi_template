@@ -1,6 +1,6 @@
 import unittest
 
-from src.create_app import create_app
+from create_app import create_app
 from src.db import db
 
 
