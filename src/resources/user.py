@@ -94,15 +94,17 @@ class UserLogin(Resource):
         )
 
     @classmethod
-    def post(cls):
-        # TODO: commetns
-        # get data from parser
+    def post(cls) -> tuple:
+        """
+        Login a user with username and password.
+        Additionally create the 'access_token' & 'refresh_token'.
+
+        :return: Token or info message.
+        """
         data = cls.parser.parse_args()
 
-        # find user in data base
         user = UserModel.find_by_username(data['username'])
 
-        # check pw
         if user and pbkdf2_sha256.verify(data['password'], user.password):
             # create access token + save user.id in that token
             access_token = create_access_token(identity=user.id, fresh=True)

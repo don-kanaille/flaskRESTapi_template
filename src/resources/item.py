@@ -21,22 +21,11 @@ class Item(Resource):
         required=True,
         help="Every item needs a store id!"
     )
-    # TODO: static methods?
-    @jwt_required()
-    def get(self, name: str) -> tuple:
-        """
-        Returns item by name.
 
-        :param name: String name.
-        :return: {'message': "Item not found."}
-        """
-        item = ItemModel.find_by_name(name)
-        if item:
-            return item.json(), 200
-        return {'message': "Item not found."}, 404
-
+    # CRUD
+    @classmethod
     @jwt_required()
-    def post(self, name: str) -> tuple:
+    def post(cls, name: str) -> tuple:
         """
         Creates a new item.
 
@@ -46,40 +35,41 @@ class Item(Resource):
         if ItemModel.find_by_name(name):
             return {'message': "An item with name '{}' already exists.".format(name)}, 422  # Un-processable Entity
 
-        data = Item.parser.parse_args()
+        data = cls.parser.parse_args()
 
         item = ItemModel(name, **data)
 
         try:
             item.save_to_db()
 
-        except Exception:
+        except Exception:  # TODO: implement own exception?
             return {'message': "Internal server error!"}, 500
         return item.json(), 201
 
+    @staticmethod
     @jwt_required()
-    def delete(self, name: str) -> tuple:
+    def get(name: str) -> tuple:
         """
-        Deletes given object.
+        Returns item by name.
 
         :param name: String name.
-        :return: {'message': 'Item deleted!'}
+        :return: {'message': "Item not found."}
         """
         item = ItemModel.find_by_name(name)
-
         if item:
-            item.delete_from_db()
-        return {'message': 'Item deleted!'}, 200
+            return item.json(), 200  # TODO: check warning
+        return {'message': "Item not found."}, 404
 
+    @classmethod
     @jwt_required()
-    def put(self, name: str) -> tuple:
+    def put(cls, name: str) -> tuple:
         """
         Create new or update existing item.
 
         :param name: String name.
         :return: {'item': Int}
         """
-        data = Item.parser.parse_args()
+        data = cls.parser.parse_args()
 
         item = ItemModel.find_by_name(name)
 
@@ -91,6 +81,21 @@ class Item(Resource):
         item.save_to_db()
 
         return item.json(), 200
+
+    @staticmethod
+    @jwt_required()
+    def delete(name: str) -> tuple:
+        """
+        Deletes given object.
+
+        :param name: String name.
+        :return: {'message': 'Item deleted!'}
+        """
+        item = ItemModel.find_by_name(name)
+
+        if item:
+            item.delete_from_db()  # TODO: check warning
+        return {'message': 'Item deleted!'}, 200
 
 
 class ItemList(Resource):

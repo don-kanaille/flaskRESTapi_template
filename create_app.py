@@ -35,7 +35,7 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
 
     # Initialization of .db, JWT & API
     db.init_app(app)
-    jwt = JWTManager(app)
+    JWTManager(app)
     api = Api(app=app)
 
     @app.before_first_request

@@ -17,6 +17,7 @@ class Store(Resource):
         help="Every store needs a name!"
     )
 
+    # CR(U)D
     @staticmethod
     @jwt_required()
     def post(name: str) -> tuple:
