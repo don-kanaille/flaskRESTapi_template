@@ -50,7 +50,7 @@ class Store(Resource):
         """
         store = StoreModel.find_by_name(name)
         if store:
-            return store.json(), 200  # TODO: check warning
+            return store.json(), 200
         return {'message': 'No such store found!'}, 404
 
     @staticmethod
@@ -65,7 +65,7 @@ class Store(Resource):
         store = StoreModel.find_by_name(name)
 
         if store:
-            store.delete_from_db()  # TODO: check warning
+            store.delete_from_db()
 
         return {'message': 'Store deleted!'}, 200
 

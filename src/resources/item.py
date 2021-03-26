@@ -57,7 +57,7 @@ class Item(Resource):
         """
         item = ItemModel.find_by_name(name)
         if item:
-            return item.json(), 200  # TODO: check warning
+            return item.json(), 200
         return {'message': "Item not found."}, 404
 
     @classmethod
@@ -94,7 +94,7 @@ class Item(Resource):
         item = ItemModel.find_by_name(name)
 
         if item:
-            item.delete_from_db()  # TODO: check warning
+            item.delete_from_db()
         return {'message': 'Item deleted!'}, 200
 
 

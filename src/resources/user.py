@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from passlib.hash import pbkdf2_sha256
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required
 
 from src.models.user import UserModel
 
@@ -48,6 +48,7 @@ class UserRegister(Resource):
 class User(Resource):
 
     @classmethod
+    @jwt_required()
     def get(cls, user_id) -> tuple:
         """
         Get the user by an id.
@@ -62,6 +63,7 @@ class User(Resource):
         return user.json(), 200
 
     @classmethod
+    @jwt_required()
     def delete(cls, user_id) -> tuple:
         """
         Delete a user from the db.
@@ -73,7 +75,7 @@ class User(Resource):
 
         if not user:
             return {'message': 'User not found!'}, 404
-        user.delete_from_db()  # TODO: check warning
+        user.delete_from_db()
         return {'message': 'User deleted.'}, 200
 
 
