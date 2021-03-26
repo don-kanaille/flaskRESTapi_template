@@ -18,11 +18,14 @@ class ItemModel(db.Model):
 
     def json(self) -> dict:
         """
-        Returns the name & price as .json string.
+        Returns the id, name, price and store_id as .json string.
 
-        :return: {'name': String, 'price': Int}
+        :return: {'id': Int, 'name': String, 'price': Int, 'store_id': Int}
         """
-        return {'name': self.name, 'price': self.price}
+        return {'id': self.id,
+                'name': self.name,
+                'price': self.price,
+                'store_id': self.store_id}
 
     @classmethod
     def find_by_name(cls, name: str) -> object:
@@ -33,6 +36,15 @@ class ItemModel(db.Model):
         :return: Object of Item-class.
         """
         return cls.query.filter_by(name=name).first()  # SELECT * FROM items WHERE name=name LIMIT 1
+
+    @classmethod
+    def find_all(cls) -> tuple:
+        """
+        Returns all items in .db
+
+        :return: All items found in .db
+        """
+        return cls.query.all()
 
     def save_to_db(self) -> None:
         """

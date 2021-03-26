@@ -18,9 +18,11 @@ class StoreModel(db.Model):
         """
         Returns the name & items as .json string.
 
-        :return: {'name': String, 'items': String}
+        :return: {'id': Int, 'name': String, 'items': String}
         """
-        return {'name': self.name, 'items': [item.json() for item in self.items.all()]}  # List comprehension
+        return {'id': self.id,
+                'name': self.name,
+                'items': [item.json() for item in self.items.all()]}  # List comprehension
 
     @classmethod
     def find_by_name(cls, name: str) -> object:
@@ -31,6 +33,15 @@ class StoreModel(db.Model):
         :return: object
         """
         return cls.query.filter_by(name=name).first()  # SELECT * FROM items WHERE name=name LIMIT 1
+
+    @classmethod
+    def find_all(cls) -> tuple:
+        """
+        Returns all stores in .db
+
+        :return: All stores found in .db
+        """
+        return cls.query.all()
 
     def save_to_db(self) -> None:
         """

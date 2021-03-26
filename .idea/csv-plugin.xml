@@ -31,7 +31,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\src\error_handlers.py">
+        <entry key="\src\models\store.py">
           <value>
             <Attribute>
               <option name="separator" value=":" />
