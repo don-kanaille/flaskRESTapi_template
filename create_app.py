@@ -17,6 +17,8 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     """
     Creates a Flask app with a specific configuration.
     Default: PRODUCTION.
+    It also initialises a data base, API & JWT.
+    Defines endpoints and custom http-status-code-error-handler.
 
     :param mode: 'PRODUCTION', 'DEVELOP', 'TEST'
     :return: Flask app.
@@ -58,12 +60,14 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
         }), error.status_code
 
     @app.errorhandler(404)
-    def page_not_found(status_code: int = 404) -> tuple:
-        return render_template('error-404.html'), status_code
+    def page_not_found(e) -> tuple:
+        # TODO: log error
+        return render_template('error-404.html'), 404
 
     @app.errorhandler(500)
-    def internal_server_error(status_code: int = 500) -> tuple:
-        return render_template('error-500.html'), status_code
+    def internal_server_error(e) -> tuple:
+        # TODO: log error
+        return render_template('error-500.html'), 500
 
     # Add Endpoints
     api.add_resource(UserRegister, '/register')
