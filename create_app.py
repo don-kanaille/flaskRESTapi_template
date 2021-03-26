@@ -61,12 +61,10 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     def page_not_found(status_code: int = 404) -> tuple:
         return render_template('error-404.html'), status_code
 
-    # TODO: internal_server_error(500)
-    """
     @app.errorhandler(500)
     def internal_server_error(status_code: int = 500) -> tuple:
         return render_template('error-500.html'), status_code
-    """
+
     # Add Endpoints
     api.add_resource(UserRegister, '/register')
     api.add_resource(Item, '/item/<string:name>')
