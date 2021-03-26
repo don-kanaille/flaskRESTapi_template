@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from passlib.hash import pbkdf2_sha256
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 from src.models.user import UserModel
 
@@ -74,3 +75,43 @@ class User(Resource):
             return {'message': 'User not found!'}, 404
         user.delete_from_db()  # TODO: check warning
         return {'message': 'User deleted.'}, 200
+
+
+class UserLogin(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'username',
+        type=str,
+        required=True,
+        help="This field cannot be blank!"
+        )
+    parser.add_argument(
+        'password',
+        type=str,
+        required=True,
+        help="This field cannot be blank!"
+        )
+
+    @classmethod
+    def post(cls):
+        # TODO: commetns
+        # get data from parser
+        data = cls.parser.parse_args()
+
+        # find user in data base
+        user = UserModel.find_by_username(data['username'])
+
+        # check pw
+        if user and pbkdf2_sha256.verify(data['password'], user.password):
+            # create access token + save user.id in that token
+            access_token = create_access_token(identity=user.id, fresh=True)
+            # create refresh token
+            refresh_token = create_refresh_token(identity=user.id)
+
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+
+        return {'message': 'Invalid credentials!'}, 401
