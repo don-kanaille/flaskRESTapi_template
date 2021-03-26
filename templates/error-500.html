@@ -1,6 +1,6 @@
 {%  extends "error-basic.html" %}
 
-{% block title %}404{% endblock %}
+{% block title %}500{% endblock %}
 
 {% block head %}
 
@@ -14,15 +14,15 @@
 {% endblock %}
 
 {% block body %}
-	<div id="notfound">
-		<div class="notfound">
+	<div id="internal">
+		<div class="internal">
 			<div>
-				<div class="notfound-404">
+				<div class="internal-500">
 					<h1>!</h1>
 				</div>
-				<h2>Error<br>404</h2>
+				<h2>Error<br>500</h2>
 			</div>
-			<p>The page you are looking for might have been removed had its name changed or is temporarily unavailable.</p>
+			<p>There is an internal server error. Please try again later.</p>
 		</div>
 	</div>
 {% endblock %}
