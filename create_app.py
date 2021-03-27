@@ -2,7 +2,7 @@ from flask import Flask, render_template
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from src.resources.user import UserRegister, User, UserLogin
+from src.resources.user import UserRegister, User, UserLogin, TokenRefresh
 from src.resources.item import Item, ItemList
 from src.resources.store import Store, StoreList
 from src.db import db
@@ -76,5 +76,6 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     api.add_resource(ItemList, '/items')
     api.add_resource(Store, '/store/<string:name>')
     api.add_resource(StoreList, '/stores')
+    api.add_resource(TokenRefresh, '/refresh')
 
     return app
