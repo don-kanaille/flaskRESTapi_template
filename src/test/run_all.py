@@ -14,6 +14,3 @@ def load_tests(loader, tests, pattern):
 
 if __name__ == '__main__':
     unittest.main()
-
-# TODO: https://stackoverflow.com/questions/1732438/how-do-i-run-all-python-unit-tests-in-a-directory
-#  Add to setup.py to aid automation

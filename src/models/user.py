@@ -12,6 +12,14 @@ class UserModel(db.Model):
         self.username = username
         self.password = password
 
+    def json(self) -> dict:
+        """
+        Returns the id & name as .json string.
+
+        :return: {'id': Int, 'username': String}
+        """
+        return {'id': self.id, 'username': self.username}
+
     @classmethod
     def find_by_username(cls, username: str) -> object:
         """
@@ -34,9 +42,14 @@ class UserModel(db.Model):
 
     def save_to_db(self) -> None:
         """
-        Save to data base.
+        Save user to data base.
         """
         db.session.add(self)
         db.session.commit()
 
-    # TODO: delete_from_db()
+    def delete_from_db(self) -> None:
+        """
+        Delete user from database.
+        """
+        db.session.delete(self)
+        db.session.commit()

@@ -49,7 +49,7 @@ class Store(Resource):
         """
         store = StoreModel.find_by_name(name)
         if store:
-            return store.json(), 200
+            return store.json(), 200  # TODO: check warning
         return {'message': 'No such store found!'}, 404
 
     @staticmethod
@@ -64,7 +64,7 @@ class Store(Resource):
         store = StoreModel.find_by_name(name)
 
         if store:
-            store.delete_from_db()
+            store.delete_from_db()  # TODO: check warning
 
         return {'message': 'Store deleted!'}, 200
 
@@ -81,4 +81,4 @@ class StoreList(Resource):
 
         :return: All stores found in .db
         """
-        return {'stores': [store.json() for store in StoreModel.query.all()]}, 200
+        return {'stores': [store.json() for store in StoreModel.find_all()]}, 200
