@@ -24,6 +24,7 @@ class TestUserLogin(BaseCase):
 
     def test_login_with_invalid_username(self):
         # Given
+        # TODO: adapt test
         payload = {
             "email": "userjw",
             "password": "1q2w3e4r"
@@ -40,6 +41,7 @@ class TestUserLogin(BaseCase):
 
     def test_login_with_invalid_password(self):
         # Given
+        # TODO: adapt test
         payload = {
             "email": "userjw",
             "password": "1q2w3e4r"

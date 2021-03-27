@@ -34,9 +34,22 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     app.app_context().push()
 
     # Initialization of .db, JWT & API
-    db.init_app(app)
-    JWTManager(app)
+    db.init_app(app=app)
+    jwt = JWTManager(app=app)
     api = Api(app=app)
+
+    @jwt.additional_claims_loader  # old: user_claims_loader
+    def add_claims_to_jwt(identity: int) -> dict:
+        """
+        Whenever we create a new JWT-token, this function is called to check,
+        if we should add any extra data ("claims") to that JWT as well.
+
+        :param identity: Int of the user-id.
+        :return:
+        """
+        if identity == 1:
+            return {'is_admin': True}  # TODO: instead of hard-coding, read from .config
+        return {'is_admin': False}
 
     @app.before_first_request
     def create_tables() -> None:
@@ -47,15 +60,15 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
 
     @app.errorhandler(404)
     def page_not_found(e) -> tuple:
-        # TODO: log error
+        # TODO: log error + comments
         return render_template('error-404.html'), 404
 
     @app.errorhandler(500)
     def internal_server_error(e) -> tuple:
-        # TODO: log error
+        # TODO: log error + comments
         return render_template('error-500.html'), 500
 
-    # Add Endpoints
+    # Endpoints
     api.add_resource(UserRegister, '/register')
     api.add_resource(UserLogin, '/login')
     api.add_resource(User, '/user/<int:user_id>')
