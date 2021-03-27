@@ -63,10 +63,11 @@ class User(Resource):
         return user.json(), 200
 
     @classmethod
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(cls, user_id) -> tuple:
         """
         Delete a user from the db.
+        Requires a fresh JWT.
 
         :param user_id: Int of user id.
         :return: .json message + status code.
@@ -101,7 +102,7 @@ class UserLogin(Resource):
         Login a user with username and password.
         Additionally create the 'access_token' & 'refresh_token'.
 
-        :return: Token or info message.
+        :return: Token (access & refresh) or info message.
         """
         data = cls.parser.parse_args()
 
@@ -126,11 +127,9 @@ class TokenRefresh(Resource):
     @jwt_required(refresh=True)
     def post(self) -> tuple:
         """
-        Refresh an existing token.
-        fresh:    "just typed in username & password.
-        not fresh: was created maybe days ago.
+        Refresh an existing (access-)token.
 
-        :return: {'access_token': new_token}, 200
+        :return: {'access_token': new_token} BUT:(fresh=False), 200
         """
         current_user = get_jwt_identity()
 

@@ -83,10 +83,11 @@ class Item(Resource):
         return item.json(), 200
 
     @staticmethod
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(name: str) -> tuple:
         """
         Deletes given object if existing.
+        Requires a fresh JWT.
 
         :param name: String name.
         :return: {'message': String}

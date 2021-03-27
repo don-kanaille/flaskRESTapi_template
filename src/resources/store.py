@@ -54,10 +54,11 @@ class Store(Resource):
         return {'message': 'No such store found!'}, 404
 
     @staticmethod
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(name: str) -> tuple:
         """
         Delete a store by its name.
+        Requires a fresh JWT.
 
         :param name: Name of the store.
         :return: .json message
