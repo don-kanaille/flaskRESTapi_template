@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
-from src.resources.user import UserRegister, User, UserLogin, TokenRefresh
+from src.resources.user import UserRegister, User, UserLogin, TokenRefresh, UserLogout
 from src.resources.item import Item, ItemList
 from src.resources.store import Store, StoreList
 from src.blacklist import BLACKLIST
@@ -55,10 +55,10 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blacklist(jwt_headers, jwt_payload):
         """
-        If decrypted_token['identity'] is not in BLACKLIST,
-        if will be reverted to the 'revoked_token_callback'.
+        Check it 'jti' is in the BLACKLIST set().
+        If true, request will be reverted to the 'revoked_token_callback'.
         """
-        return jwt_payload['sub'] in BLACKLIST
+        return jwt_payload['jti'] in BLACKLIST
 
     @jwt.expired_token_loader
     def expired_token_callback():
@@ -115,6 +115,7 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     # Endpoints
     api.add_resource(User, '/user/<int:user_id>')
     api.add_resource(UserLogin, '/login')
+    api.add_resource(UserLogout, '/logout')
     api.add_resource(UserRegister, '/register')
     api.add_resource(Item, '/item/<string:name>')
     api.add_resource(ItemList, '/items')

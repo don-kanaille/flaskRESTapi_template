@@ -1,4 +1,4 @@
 """
-BLACKLIST contains numbers (aka IDs) to deny access etc.
+BLACKLIST for jti.
 """
-BLACKLIST = {2, 3}
+BLACKLIST = set()
