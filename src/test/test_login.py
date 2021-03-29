@@ -13,6 +13,7 @@ class TestUserLogin(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r"
         })
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload)
 
         # When
@@ -28,6 +29,7 @@ class TestUserLogin(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r"
         }
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=json.dumps(payload))
 
         # When
@@ -44,6 +46,7 @@ class TestUserLogin(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r"
         }
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=json.dumps(payload))
 
         # When
@@ -60,6 +63,7 @@ class TestUserLogin(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r"
         }
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=json.dumps(payload))
 
         # When
@@ -68,4 +72,24 @@ class TestUserLogin(BaseCase):
         # Then
         self.assertTrue(response.json['access_token'])
         self.assertTrue(response.json['refresh_token'])
+        self.assertEqual(200, response.status_code)
+
+    def test_get_user_by_id(self):
+        # Given
+        user_id = 1
+        payload = json.dumps({
+            "username": "userjw",
+            "password": "1q2w3e4r"
+        })
+        # Preconditions
+        response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload)
+        response = self.app.post('/login', headers={"Content-Type": "application/json"}, data=payload)
+
+        # When
+        access_token = 'Bearer ' + response.json['access_token']
+        response = self.app.get('/user/{}'.format(user_id), headers={"Authorization": access_token}, data=payload)
+
+        # Then
+        self.assertEqual(1, response.json['id'])
+        self.assertEqual('userjw', response.json['username'])
         self.assertEqual(200, response.status_code)

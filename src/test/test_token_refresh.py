@@ -13,7 +13,7 @@ class TestToken(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r"
         }
-        # Conditions
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=json.dumps(payload))
         response = self.app.post('/login', headers={"Content-Type": "application/json"}, data=json.dumps(payload))
         access_token_old = response.json['access_token']

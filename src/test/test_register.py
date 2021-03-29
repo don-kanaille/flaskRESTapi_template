@@ -64,7 +64,7 @@ class TestUserRegister(BaseCase):
             "username": "userjw",
             "password": "1q2w3e4r",
         })
-        # Register user
+        # Preconditions
         response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload)
 
         # When
