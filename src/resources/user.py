@@ -1,8 +1,13 @@
 from flask_restful import Resource, reqparse
 from passlib.hash import pbkdf2_sha256
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (create_access_token,
+                                create_refresh_token,
+                                jwt_required,
+                                get_jwt_identity,
+                                get_jwt)
 
 from src.models.user import UserModel
+from src.blacklist import BLACKLIST
 
 
 class UserRegister(Resource):
@@ -16,13 +21,13 @@ class UserRegister(Resource):
         type=str,
         required=True,
         help="This field cannot be blank!"
-        )
+    )
     parser.add_argument(
         'password',
         type=str,
         required=True,
         help="This field cannot be blank!"
-        )
+    )
 
     @classmethod
     def post(cls) -> tuple:
@@ -81,20 +86,19 @@ class User(Resource):
 
 
 class UserLogin(Resource):
-
     parser = reqparse.RequestParser()
     parser.add_argument(
         'username',
         type=str,
         required=True,
         help="This field cannot be blank!"
-        )
+    )
     parser.add_argument(
         'password',
         type=str,
         required=True,
         help="This field cannot be blank!"
-        )
+    )
 
     @classmethod
     def post(cls) -> tuple:
@@ -115,11 +119,26 @@ class UserLogin(Resource):
             refresh_token = create_refresh_token(identity=user.id)
 
             return {
-                'access_token': access_token,
-                'refresh_token': refresh_token
-            }, 200
+                       'access_token': access_token,
+                       'refresh_token': refresh_token
+                   }, 200
 
         return {'message': 'Invalid credentials!'}, 401
+
+
+class UserLogout(Resource):
+
+    @jwt_required()
+    def post(self) -> tuple:
+        """
+        Put jti on the BLACKLIST to deny further access to endpoints.
+
+        :return: {'message': 'Successfully logged out!'}, 200
+        """
+        jti = get_jwt()['jti']  # jti = "JWT ID", a unique identifier for a JWT.
+
+        BLACKLIST.add(jti)
+        return {'message': 'Successfully logged out!'}, 200
 
 
 class TokenRefresh(Resource):
