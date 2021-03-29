@@ -1,5 +1,6 @@
 from flask_restful import Resource, reqparse
 from passlib.hash import pbkdf2_sha256
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
 from src.models.user import UserModel
 
@@ -47,6 +48,7 @@ class UserRegister(Resource):
 class User(Resource):
 
     @classmethod
+    @jwt_required()
     def get(cls, user_id) -> tuple:
         """
         Get the user by an id.
@@ -61,9 +63,11 @@ class User(Resource):
         return user.json(), 200
 
     @classmethod
+    @jwt_required(fresh=True)
     def delete(cls, user_id) -> tuple:
         """
         Delete a user from the db.
+        Requires a fresh JWT.
 
         :param user_id: Int of user id.
         :return: .json message + status code.
@@ -72,5 +76,62 @@ class User(Resource):
 
         if not user:
             return {'message': 'User not found!'}, 404
-        user.delete_from_db()  # TODO: check warning
+        user.delete_from_db()
         return {'message': 'User deleted.'}, 200
+
+
+class UserLogin(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument(
+        'username',
+        type=str,
+        required=True,
+        help="This field cannot be blank!"
+        )
+    parser.add_argument(
+        'password',
+        type=str,
+        required=True,
+        help="This field cannot be blank!"
+        )
+
+    @classmethod
+    def post(cls) -> tuple:
+        """
+        Login a user with username and password.
+        Additionally create the 'access_token' & 'refresh_token'.
+
+        :return: Token (access & refresh) or info message.
+        """
+        data = cls.parser.parse_args()
+
+        user = UserModel.find_by_username(data['username'])
+
+        if user and pbkdf2_sha256.verify(data['password'], user.password):
+            # create access token + save user.id in that token
+            access_token = create_access_token(identity=user.id, fresh=True)
+            # create refresh token
+            refresh_token = create_refresh_token(identity=user.id)
+
+            return {
+                'access_token': access_token,
+                'refresh_token': refresh_token
+            }, 200
+
+        return {'message': 'Invalid credentials!'}, 401
+
+
+class TokenRefresh(Resource):
+
+    @jwt_required(refresh=True)
+    def post(self) -> tuple:
+        """
+        Refresh an existing (access-)token.
+
+        :return: {'access_token': new_token} BUT:(fresh=False), 200
+        """
+        current_user = get_jwt_identity()
+
+        new_token = create_access_token(identity=current_user, fresh=False)
+        return {'access_token': new_token}, 200

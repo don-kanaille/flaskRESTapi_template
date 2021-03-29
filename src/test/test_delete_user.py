@@ -9,6 +9,7 @@ class TestUserDelete(BaseCase):
     """
     def test_successful_user_deletion(self):
         # Given
+        # TODO: adapt test
         username = 'userjw'
         password = '1q2w3e4r'
         payload = json.dumps({

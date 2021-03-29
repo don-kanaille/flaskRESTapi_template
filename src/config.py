@@ -1,4 +1,3 @@
-from datetime import timedelta
 from os import environ
 
 
@@ -9,20 +8,19 @@ class Config(object):
     ENV = 'production'
     DEBUG = False
     TESTING = False
-    SECRET_KEY = "B\xb2?.\xdf\x9f\xa7m\xf8\x8a%,\xf7\xc4\xfa\x91"
+    SECRET_KEY = "B\xb2?.\xdf\x9f\xa7m\xf8\x8a%,\xf7\xc4\xfa\x91"  # TODO: *** Change ***
 
     DB_NAME = "production-db"
-    DB_USERNAME = "foo"
-    DB_PASSWORD = "bar"
+    DB_USERNAME = "foo"  # TODO: *** Change ***
+    DB_PASSWORD = "bar"  # TODO: *** Change ***
 
     SESSION_COOKIE_SECURE = True
 
     FLASK_SERVER_NAME = 'localhost:5000'
     FLASK_THREADED = True
 
-    JWT_AUTH_URL_RULE = '/login'
-    JWT_EXPIRATION_DELTA = timedelta(seconds=1800)
-    # TODO: add folder for .db files to have a clean folder structure
+    JWT_SECRET_KEY = "B\xb2?.\xdf\x9f\xa7m\xf8\x8a%,\xf7\xc4\xfa\x91"  # TODO: *** Change ***
+
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL', 'sqlite:///' + DB_NAME + '.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
