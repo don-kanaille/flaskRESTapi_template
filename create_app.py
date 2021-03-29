@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from src.resources.user import UserRegister, User, UserLogin, TokenRefresh
 from src.resources.item import Item, ItemList
 from src.resources.store import Store, StoreList
+from src.blacklist import BLACKLIST
 from src.db import db
 
 
@@ -51,8 +52,16 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
             return {'is_admin': True}  # TODO: instead of hard-coding, read from .config
         return {'is_admin': False}
 
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blacklist(jwt_headers, jwt_payload):
+        """
+        If decrypted_token['identity'] is not in BLACKLIST,
+        if will be reverted to the 'revoked_token_callback'.
+        """
+        return jwt_payload['sub'] in BLACKLIST
+
     @jwt.expired_token_loader
-    def expired_token_callback() -> tuple:
+    def expired_token_callback():
         return jsonify({
             'description': 'The token has expired.',
             'error': 'token_expired'
