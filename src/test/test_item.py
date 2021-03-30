@@ -56,9 +56,29 @@ class TestItemCases(BaseCase):
         self.assertEqual(422, response.status_code)
         self.assertEqual("Item already exists.", response.json['message'])
 
-    def test_update_item(self):
-        # TODO
-        self.assertEqual(True, False)
+    def test_update_item(self, payload_login=payload_login):
+        # Given
+        item = 'foobar'
+        price_old = 42.69
+        price_new = 18.60
+        payload = {
+            "price": price_old,
+            "store_id": 42
+        }
+        # Preconditions
+        response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload_login)
+        response = self.app.post('/login', headers={"Content-Type": "application/json"}, data=payload_login)
+        access_token = 'Bearer ' + response.json['access_token']
+        header = {"Authorization": access_token, "Content-Type": "application/json"}
+        response = self.app.post('/item/{}'.format(item), headers=header, data=json.dumps(payload))
+
+        # When
+        payload['price'] = price_new
+        response = self.app.put('/item/{}'.format(item), headers=header, data=json.dumps(payload))
+
+        # Then
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(18.60 == response.json['price'])
 
     def test_delete_item(self):
         # TODO
