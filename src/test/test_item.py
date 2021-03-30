@@ -3,7 +3,7 @@ import json
 from test.test_basic import BaseCase
 
 
-class TestItemCases(BaseCase):
+class TestItem(BaseCase):
     """
     TestClass to test CRUD item methods.
     """
@@ -107,3 +107,51 @@ class TestItemCases(BaseCase):
 
         # Then
         self.assertEqual(404, response.status_code)
+
+
+class TestItemList(BaseCase):
+    """
+    TestClass to test the ItemList resource.
+    """
+    def test_get_list_of_all_items(self):
+        # Given
+        payload = json.dumps({
+            "username": "userjw",
+            "password": "1q2w3e4r"
+        })
+        item1 = 'foo'
+        payload1 = json.dumps({
+            "price": 42,
+            "store_id": 1
+        })
+        item2 = 'bar'
+        payload2 = json.dumps({
+            "price": 69,
+            "store_id": 1
+        })
+        # Preconditions
+        response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload)
+        response = self.app.post('/login', headers={"Content-Type": "application/json"}, data=payload)
+
+        access_token = 'Bearer ' + response.json['access_token']
+        header = {"Authorization": access_token, "Content-Type": "application/json"}
+        response = self.app.post('/item/{}'.format(item1), headers=header, data=payload1)
+        response = self.app.post('/item/{}'.format(item2), headers=header, data=payload2)
+
+        # When get without JWT
+        response = self.app.get('/items', headers={}, data={})
+
+        # Then
+        self.assertTrue(2 == len(response.json['items']))
+        self.assertEqual("More data available when logged in.", response.json['message'])
+        self.assertEqual(200, response.status_code)
+
+        # When get with JWT
+        header = {"Authorization": access_token, "Content-Type": "application/json"}
+        response = self.app.get('/items', headers=header, data={})
+
+        # Then
+        self.assertTrue(2 == len(response.json['items']))
+        self.assertTrue({'id': 1, 'name': 'foo', 'price': 42.0, 'store_id': 1} == response.json['items'][0])
+        self.assertTrue({'id': 2, 'name': 'bar', 'price': 69.0, 'store_id': 1} == response.json['items'][1])
+        self.assertEqual(200, response.status_code)
