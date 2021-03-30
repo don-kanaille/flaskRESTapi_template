@@ -80,6 +80,30 @@ class TestItemCases(BaseCase):
         self.assertEqual(200, response.status_code)
         self.assertTrue(18.60 == response.json['price'])
 
-    def test_delete_item(self):
-        # TODO
-        self.assertEqual(True, False)
+    def test_delete_item(self, payload_login=payload_login):
+        # Given
+        item = 'foobar'
+        payload = json.dumps({
+            "price": 42.69,
+            "store_id": 42
+        })
+        # Preconditions
+        response = self.app.post('/register', headers={"Content-Type": "application/json"}, data=payload_login)
+        response = self.app.post('/login', headers={"Content-Type": "application/json"}, data=payload_login)
+        access_token = 'Bearer ' + response.json['access_token']
+        header = {"Authorization": access_token, "Content-Type": "application/json"}
+        response = self.app.post('/item/{}'.format(item), headers=header, data=payload)
+
+        # When delete item
+        header = {"Authorization": access_token}
+        response = self.app.delete('/item/{}'.format(item), headers=header, data={})
+
+        # Then
+        self.assertEqual(200, response.status_code)
+
+        # When item was deleted
+        header = {"Authorization": access_token, "Content-Type": "application/json"}
+        response = self.app.get('/item/{}'.format(item), headers=header, data=payload)
+
+        # Then
+        self.assertEqual(404, response.status_code)
