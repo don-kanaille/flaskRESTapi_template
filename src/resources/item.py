@@ -30,10 +30,10 @@ class Item(Resource):
         Creates a new item.
 
         :param name:
-        :return: {'message': "An item with name '{}' already exists."}
+        :return: {'message': "Item already exists."}
         """
         if ItemModel.find_by_name(name):
-            return {'message': "An item with name '{}' already exists.".format(name)}, 422  # Un-processable Entity
+            return {'message': "Item already exists."}, 422  # Un-processable Entity
 
         data = cls.parser.parse_args()
 
@@ -42,7 +42,7 @@ class Item(Resource):
         try:
             item.save_to_db()
 
-        except Exception:  # TODO: implement own exception?
+        except Exception:
             return {'message': "Internal server error!"}, 500
         return item.json(), 201
 

@@ -1,10 +1,18 @@
 from os import environ
+from os.path import dirname, join
+
+# Modes for configuration
+modes: dict = {'PRODUCTION': 'ProductionConfig',
+               'DEVELOP': 'DevelopmentConfig',
+               'TEST': 'TestingConfig'}
 
 
 class Config(object):
     """
     Default configuration.
     """
+    ADMIN: int = 1
+
     ENV = 'production'
     DEBUG = False
     TESTING = False
@@ -26,6 +34,11 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL', 'sqlite:///' + DB_NAME + '.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
+
+    LOG_LEVEL = 'INFO'
+    LOG_FILE = join(dirname(__file__), 'logs/flask_app.log')
+    LOG_FILEMODE = 'w'
+    LOGGER_NAME = 'flask_app'
 
 
 class ProductionConfig(Config):
@@ -50,6 +63,8 @@ class DevelopmentConfig(Config):
 
     SESSION_COOKIE_SECURE = False
 
+    LOG_LEVEL = 'DEBUG'
+
 
 class TestingConfig(Config):
     """
@@ -65,3 +80,5 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL', 'sqlite:///' + DB_NAME + '.db')
 
     SESSION_COOKIE_SECURE = False
+
+    LOG_LEVEL = 'DEBUG'
