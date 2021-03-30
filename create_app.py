@@ -1,8 +1,8 @@
 from flask import Flask, render_template, jsonify
-from flask_restful import Api
+from logging import getLogger, basicConfig
 from flask_jwt_extended import JWTManager
+from flask_restful import Api
 from time import ctime
-import logging
 
 from src.resources.user import UserRegister, User, UserLogin, TokenRefresh, UserLogout
 from src.resources.item import Item, ItemList
@@ -33,10 +33,10 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     app.app_context().push()
 
     # Initialization of logger
-    log = logging.getLogger(app.config['LOGGER_NAME'])
-    logging.basicConfig(filename=app.config['LOG_FILE'],
-                        filemode=app.config['LOG_FILEMODE'],
-                        level=app.config['LOG_LEVEL'])
+    log = getLogger(app.config['LOGGER_NAME'])
+    basicConfig(filename=app.config['LOG_FILE'],
+                filemode=app.config['LOG_FILEMODE'],
+                level=app.config['LOG_LEVEL'])
 
     # Initialization of .db, JWT & API
     log.debug("*** INIT START *** {}".format(ctime()))

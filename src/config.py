@@ -1,4 +1,5 @@
 from os import environ
+from os.path import dirname, join
 
 # Modes for configuration
 modes: dict = {'PRODUCTION': 'ProductionConfig',
@@ -35,7 +36,7 @@ class Config(object):
     PROPAGATE_EXCEPTIONS = True
 
     LOG_LEVEL = 'INFO'
-    LOG_FILE = 'logs/flask_app.log'
+    LOG_FILE = join(dirname(__file__), 'logs/flask_app.log')
     LOG_FILEMODE = 'w'
     LOGGER_NAME = 'flask_app'
 
