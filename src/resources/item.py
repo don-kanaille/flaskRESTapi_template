@@ -42,7 +42,7 @@ class Item(Resource):
         try:
             item.save_to_db()
 
-        except Exception:  # TODO: implement own exception?
+        except Exception:
             return {'message': "Internal server error!"}, 500
         return item.json(), 201
 

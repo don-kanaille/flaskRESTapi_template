@@ -1,17 +1,15 @@
 from flask import Flask, render_template, jsonify
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from time import ctime
+import logging
 
 from src.resources.user import UserRegister, User, UserLogin, TokenRefresh, UserLogout
 from src.resources.item import Item, ItemList
 from src.resources.store import Store, StoreList
 from src.blacklist import BLACKLIST
+from src.config import modes
 from src.db import db
-
-
-modes = {'PRODUCTION': 'ProductionConfig',
-         'DEVELOP': 'DevelopmentConfig',
-         'TEST': 'TestingConfig'}
 
 
 def create_app(mode: str = 'DEPLOY') -> Flask:
@@ -34,7 +32,14 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     app.config.from_object("config." + modes[mode])
     app.app_context().push()
 
+    # Initialization of logger
+    log = logging.getLogger(app.config['LOGGER_NAME'])
+    logging.basicConfig(filename=app.config['LOG_FILE'],
+                        filemode=app.config['LOG_FILEMODE'],
+                        level=app.config['LOG_LEVEL'])
+
     # Initialization of .db, JWT & API
+    log.debug("*** INIT START *** {}".format(ctime()))
     db.init_app(app=app)
     jwt = JWTManager(app=app)
     api = Api(app=app)
@@ -48,8 +53,8 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
         :param identity: Int of the user-id.
         :return: {'is_admin': Bool}
         """
-        if identity == 1:
-            return {'is_admin': True}  # TODO: instead of hard-coding, read from .config
+        if identity == app.config['ADMIN']:
+            return {'is_admin': True}
         return {'is_admin': False}
 
     @jwt.token_in_blocklist_loader
@@ -104,12 +109,12 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
 
     @app.errorhandler(404)
     def page_not_found(error) -> tuple:
-        # TODO: log error + comments
+        log.warning("page_not_found: {}".format(ctime()))
         return render_template('error-404.html'), 404
 
     @app.errorhandler(500)
     def internal_server_error(error) -> tuple:
-        # TODO: log error + comments
+        log.error("internal_server_error: {}".format(ctime()))
         return render_template('error-500.html'), 500
 
     # Endpoints
@@ -123,4 +128,5 @@ def create_app(mode: str = 'DEPLOY') -> Flask:
     api.add_resource(StoreList, '/stores')
     api.add_resource(TokenRefresh, '/refresh')
 
+    log.debug("*** INIT COMPLETED *** {}".format(ctime()))
     return app
