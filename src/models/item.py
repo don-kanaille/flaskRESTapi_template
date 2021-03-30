@@ -38,7 +38,7 @@ class ItemModel(db.Model):
         return cls.query.filter_by(name=name).first()  # SELECT * FROM items WHERE name=name LIMIT 1
 
     @classmethod
-    def find_all(cls) -> tuple:
+    def find_all(cls) -> dict:
         """
         Returns all items in .db
 

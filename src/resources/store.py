@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.models.store import StoreModel
@@ -17,6 +17,7 @@ class Store(Resource):
         help="Every store needs a name!"
     )
 
+    # CR(U)D
     @staticmethod
     @jwt_required()
     def post(name: str) -> tuple:
@@ -49,14 +50,15 @@ class Store(Resource):
         """
         store = StoreModel.find_by_name(name)
         if store:
-            return store.json(), 200  # TODO: check warning
+            return store.json(), 200
         return {'message': 'No such store found!'}, 404
 
     @staticmethod
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(name: str) -> tuple:
         """
         Delete a store by its name.
+        Requires a fresh JWT.
 
         :param name: Name of the store.
         :return: .json message
@@ -64,7 +66,7 @@ class Store(Resource):
         store = StoreModel.find_by_name(name)
 
         if store:
-            store.delete_from_db()  # TODO: check warning
+            store.delete_from_db()
 
         return {'message': 'Store deleted!'}, 200
 

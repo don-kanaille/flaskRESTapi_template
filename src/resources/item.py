@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from flask_jwt import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
 from src.models.item import ItemModel
 
@@ -22,8 +22,33 @@ class Item(Resource):
         help="Every item needs a store id!"
     )
 
+    # CRUD
+    @classmethod
     @jwt_required()
-    def get(self, name: str) -> tuple:
+    def post(cls, name: str) -> tuple:
+        """
+        Creates a new item.
+
+        :param name:
+        :return: {'message': "Item already exists."}
+        """
+        if ItemModel.find_by_name(name):
+            return {'message': "Item already exists."}, 422  # Un-processable Entity
+
+        data = cls.parser.parse_args()
+
+        item = ItemModel(name, **data)
+
+        try:
+            item.save_to_db()
+
+        except Exception:
+            return {'message': "Internal server error!"}, 500
+        return item.json(), 201
+
+    @staticmethod
+    @jwt_required()
+    def get(name: str) -> tuple:
         """
         Returns item by name.
 
@@ -35,51 +60,16 @@ class Item(Resource):
             return item.json(), 200
         return {'message': "Item not found."}, 404
 
+    @classmethod
     @jwt_required()
-    def post(self, name: str) -> tuple:
-        """
-        Creates a new item.
-
-        :param name:
-        :return: {'message': "An item with name '{}' already exists."}
-        """
-        if ItemModel.find_by_name(name):
-            return {'message': "An item with name '{}' already exists.".format(name)}, 422  # Un-processable Entity
-
-        data = Item.parser.parse_args()
-
-        item = ItemModel(name, **data)
-
-        try:
-            item.save_to_db()
-
-        except Exception:
-            return {'message': "Internal server error!"}, 500
-        return item.json(), 201
-
-    @jwt_required()
-    def delete(self, name: str) -> tuple:
-        """
-        Deletes given object.
-
-        :param name: String name.
-        :return: {'message': 'Item deleted!'}
-        """
-        item = ItemModel.find_by_name(name)
-
-        if item:
-            item.delete_from_db()
-        return {'message': 'Item deleted!'}, 200
-
-    @jwt_required()
-    def put(self, name: str) -> tuple:
+    def put(cls, name: str) -> tuple:
         """
         Create new or update existing item.
 
         :param name: String name.
         :return: {'item': Int}
         """
-        data = Item.parser.parse_args()
+        data = cls.parser.parse_args()
 
         item = ItemModel.find_by_name(name)
 
@@ -92,17 +82,48 @@ class Item(Resource):
 
         return item.json(), 200
 
+    @staticmethod
+    @jwt_required(fresh=True)
+    def delete(name: str) -> tuple:
+        """
+        Deletes given object if existing.
+        Requires a fresh JWT.
+
+        :param name: String name.
+        :return: {'message': String}
+        """
+        claims = get_jwt()
+
+        if not claims['is_admin']:
+            return {'message': 'Admin privilege required!'}, 401
+
+        item = ItemModel.find_by_name(name)
+
+        if item:
+            item.delete_from_db()
+            return {'message': 'Item deleted!'}, 200
+        return {'message': 'Item not found!'}, 404
+
 
 class ItemList(Resource):
     """
     Resource: ItemList.
     """
     @staticmethod
-    @jwt_required()
+    @jwt_required(optional=True)
     def get() -> tuple:
         """
         Returns a list of all items.
+        More detailed return when logged in.
 
         :return: {'items': Int}
         """
-        return {'items': [item.json() for item in ItemModel.find_all()]}, 200
+        user_id = get_jwt_identity()
+
+        items = [item.json() for item in ItemModel.find_all()]
+        if user_id:
+            return {'items': items}, 200
+        return {
+            'items': [item['name'] for item in items],
+            'message': 'More data available when logged in.'
+        }, 200
