@@ -216,3 +216,9 @@ fabric.properties
 
 # Logfiles
 *.log
+
+# IDE
+.idea
+
+# Env
+venv
